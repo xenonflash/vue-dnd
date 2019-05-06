@@ -54,12 +54,15 @@ export default {
         const { width, height, top, left } = elem.getBoundingClientRect()
         const { display, position, margin } = getComputedStyle(elem)
         // 将shadow 元素 替换到 原位置处
-        shadowElem.style.cssText = `
+        shadowElem.style.cssText += `
           display: ${display};
           position: ${position};
           margin: ${margin};
           width: ${width}px;
           height: ${height}px;
+          box-sizing: border-box;
+          border: 2px dashed #ddd;
+          background: #eee;
         `
         // 设置样式
         elem.classList.add('dnd-item-active')
@@ -80,7 +83,8 @@ export default {
       document.addEventListener('mouseup', e => {
         this.mousedown = false
         // 放回去,替换掉shadow元素
-        this.$el.replaceChild(activeElem, shadowElem)
+        this.$el.insertBefore(activeElem, shadowElem)
+        shadowElem.remove()
         // 缩放回去大小
         activeElem.classList.remove('dnd-item-active')
         activeElem.style.cssText = ''
@@ -115,9 +119,9 @@ export default {
     cursor: pointer;
     user-select: none
   }
-  .dnd-shadow{
+  /* .dnd-shadow{
     box-sizing: border-box;
     border: 1px dashed;
-    background: lightred;
-  }
+    background: lightcoral;
+  } */
 </style>
