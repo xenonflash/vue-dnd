@@ -11,11 +11,31 @@ let activeElem = null
 
 let bacupCssText = ''
 
+/**
+ * 交换两个元素位置
+ */
+function exchangeElement(a, b) {
+  const { left: aLeft, top: aTop } = a.getBoundingClientRect()
+  const { left: bLeft, top: bTop } = b.getBoundingClientRect()
+
+  a.style.position = b.style.position = 'relative'
+  a.style.transition = b.style.transition = 'all 200ms'
+  a.style.top = b.style.top = '0px'
+  a.style.left = b.style.left = '0px'
+  setTimeout(() => {
+    a.style.left = bLeft - aLeft + 'px'
+    a.style.top = bTop - aTop + 'px'
+    b.style.left = aLeft - bLeft + 'px'
+    b.style.top = aTop - bTop + 'px'
+  }, 0);
+}
+window._e = exchangeElement
 export default {
   name: 'lb-dnd',
   data() {
     return {
       childElem: [],
+      childElemPos: [],
       mousedown: false,
       downX: 0,
       downY: 0,
@@ -38,6 +58,7 @@ export default {
       this.childElem = this.$slots.default.map(s => s.elm)
       this.childElem.forEach(item => {
         this.initChildClass(item)
+        this.childElemPos.push(item.getBoundingClientRect())
       }, this)
       this.initEvent()
     },
@@ -92,8 +113,13 @@ export default {
       })
     },
     handleMove(e) {
+      // 移动元素
       activeElem.style.left = `${parseInt(e.clientX) - this.offsetX}px`
       activeElem.style.top = `${parseInt(e.clientY) - this.offsetY}px`
+      // 监测 & 更新 shadow元素位置
+      this.childElemPos.forEach(pos => {
+
+      })
     },
     hookMounted() {
       console.log('hook mounted')
