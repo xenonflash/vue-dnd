@@ -17,17 +17,20 @@ let bacupCssText = ''
 function exchangeElement(a, b) {
   const { left: aLeft, top: aTop } = a.getBoundingClientRect()
   const { left: bLeft, top: bTop } = b.getBoundingClientRect()
-
+  // init style
   a.style.position = b.style.position = 'relative'
   a.style.transition = b.style.transition = 'all 200ms'
   a.style.top = b.style.top = '0px'
   a.style.left = b.style.left = '0px'
+  // transition
   setTimeout(() => {
     a.style.left = bLeft - aLeft + 'px'
     a.style.top = bTop - aTop + 'px'
     b.style.left = aLeft - bLeft + 'px'
     b.style.top = aTop - bTop + 'px'
   }, 0);
+  // replace element
+
 }
 window._e = exchangeElement
 export default {
@@ -37,8 +40,6 @@ export default {
       childElem: [],
       childElemPos: [],
       mousedown: false,
-      downX: 0,
-      downY: 0,
       offsetX: 0,
       offsetY: 0
     };
@@ -92,11 +93,9 @@ export default {
 
 
         this.$el.insertBefore(shadowElem, elem)
-        // 设定开始锚点
-        this.downX = parseInt(e.clientX)
-        this.downY = parseInt(e.clientY)
-        this.offsetX = this.downX - left
-        this.offsetY = this.downY - top
+        // 获取鼠标下落时和元素的 offset
+        this.offsetX = parseInt(e.clientX) - left
+        this.offsetY = parseInt(e.clientY) - top
         // 绑定move 事件
         document.addEventListener('mousemove', this.handleMove)
       })
