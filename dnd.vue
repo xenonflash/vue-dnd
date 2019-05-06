@@ -6,7 +6,7 @@
 <script>
 // 创建shaodw 元素
 let shadowElem = document.createElement('div')
-shadowElem.className = 'shadow'
+shadowElem.className = 'dnd-shadow'
 let activeElem = null
 
 let bacupCssText = ''
@@ -18,7 +18,9 @@ export default {
       childElem: [],
       mousedown: false,
       downX: 0,
-      downY: 0
+      downY: 0,
+      offsetX: 0,
+      offsetY: 0
     };
   },
   components: {
@@ -58,18 +60,21 @@ export default {
           margin: ${margin};
           width: ${width}px;
           height: ${height}px;
-          box-sizing: border-box;
-          border: 1px dashed;
-          background: lightred;
         `
         // 设置样式
         elem.classList.add('dnd-item-active')
-        elem.style.cssText += `
-          left: ${left}px;
-          top: ${top}px
-        `
+        elem.style.left = `${left}px`
+        elem.style.top = `${top}px`
+
+
         this.$el.insertBefore(shadowElem, elem)
         // 设定开始锚点
+        this.downX = parseInt(e.clientX)
+        this.downY = parseInt(e.clientY)
+        this.offsetX = this.downX - left
+        this.offsetY = this.downY - top
+        // 绑定move 事件
+        document.addEventListener('mousemove', this.handleMove)
       })
 
       document.addEventListener('mouseup', e => {
@@ -78,7 +83,13 @@ export default {
         this.$el.replaceChild(activeElem, shadowElem)
         // 缩放回去大小
         activeElem.classList.remove('dnd-item-active')
+        activeElem.style.cssText = ''
+        document.removeEventListener('mousemove', this.handleMove)
       })
+    },
+    handleMove(e) {
+      activeElem.style.left = `${parseInt(e.clientX) - this.offsetX}px`
+      activeElem.style.top = `${parseInt(e.clientY) - this.offsetY}px`
     },
     hookMounted() {
       console.log('hook mounted')
@@ -103,5 +114,10 @@ export default {
     opacity: 0.9;
     cursor: pointer;
     user-select: none
+  }
+  .dnd-shadow{
+    box-sizing: border-box;
+    border: 1px dashed;
+    background: lightred;
   }
 </style>
