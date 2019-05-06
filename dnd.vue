@@ -5,9 +5,9 @@
 </template>
 <script>
 // 创建shaodw 元素
-const shadowElem = document.createElement('div')
+let shadowElem = document.createElement('div')
 shadowElem.className = 'shadow'
-const activeElem = null
+let activeElem = null
 
 let bacupCssText = ''
 
@@ -15,7 +15,10 @@ export default {
   name: 'lb-dnd',
   data() {
     return {
-      childElem: []
+      childElem: [],
+      mousedown: false,
+      downX: 0,
+      downY: 0
     };
   },
   components: {
@@ -33,15 +36,18 @@ export default {
       this.childElem = this.$slots.default.map(s => s.elm)
       this.childElem.forEach(item => {
         this.initChildClass(item)
-        this.initChildEvent(item)
       }, this)
+      this.initEvent()
     },
     initChildClass(child) {
       child.classList.add('dnd-item')
     },
-    initChildEvent(child) {
-      child.addEventListener('mousedown', e => {
+    initEvent(child) {
+      document.addEventListener('mousedown', e => {
         const elem = e.target
+        if (!elem.classList.contains('dnd-item')) return
+        activeElem = elem
+        this.mousedown = true
         // 获取尺寸
         const { width, height, top, left } = elem.getBoundingClientRect()
         const { display, position, margin } = getComputedStyle(elem)
@@ -66,12 +72,12 @@ export default {
         // 设定开始锚点
       })
 
-      child.addEventListener('mouseup', e => {
-        const elem = e.target
+      document.addEventListener('mouseup', e => {
+        this.mousedown = false
         // 放回去,替换掉shadow元素
-        this.$el.replaceChild(elem, shadowElem)
+        this.$el.replaceChild(activeElem, shadowElem)
         // 缩放回去大小
-        elem.classList.remove('dnd-item-active')
+        activeElem.classList.remove('dnd-item-active')
       })
     },
     hookMounted() {
@@ -93,5 +99,9 @@ export default {
     transform: scale(1.1);
     box-shadow: 0 3px 15px #ddd;
     position: fixed;
+    margin: 0 !important;
+    opacity: 0.9;
+    cursor: pointer;
+    user-select: none
   }
 </style>
