@@ -1,0 +1,1 @@
+export default com from './dnd.vue'
