@@ -1,9 +1,9 @@
 <template>
   <dnd>
-    <div class="item">1</div>
-    <div class="item">2</div>
-    <div class="item">3</div>
-    <div class="item">4</div>
+    <div data-index="1" class="item">1</div>
+    <div data-index="2" class="item">2</div>
+    <div data-index="3" class="item">3</div>
+    <div data-index="4" class="item">4</div>
   </dnd>
 </template>
 <script>

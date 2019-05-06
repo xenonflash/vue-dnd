@@ -19,7 +19,7 @@ function exchangeElement(a, b) {
   const { left: bLeft, top: bTop } = b.getBoundingClientRect()
   // init style
   a.style.position = b.style.position = 'relative'
-  a.style.transition = b.style.transition = 'all 200ms'
+  a.style.transition = b.style.transition = 'all 150ms'
   a.style.top = b.style.top = '0px'
   a.style.left = b.style.left = '0px'
   // transition
@@ -29,8 +29,14 @@ function exchangeElement(a, b) {
     b.style.left = aLeft - bLeft + 'px'
     b.style.top = aTop - bTop + 'px'
   }, 0);
-  // replace element
-
+  setTimeout(() => {
+    // restore position data
+    a.style.left = b.style.left = a.style.top = b.style.top = '0px'
+    a.style.transition = b.style.transition = 'none'
+    // replace element
+    // b = [a, a = b][0]
+    b.parentElement.insertBefore(b, a)
+  }, 160);
 }
 window._e = exchangeElement
 export default {
