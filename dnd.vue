@@ -7,9 +7,9 @@
 // 创建shaodw 元素
 const shadowElem = document.createElement('div')
 shadowElem.className = 'shadow'
-shadowElem.style.cssText = `
+const activeElem = null
 
-`
+let bacupCssText = ''
 
 export default {
   name: 'lb-dnd',
@@ -31,42 +31,47 @@ export default {
   methods: {
     init() {
       this.childElem = this.$slots.default.map(s => s.elm)
-      this.initChildEvent()
+      this.childElem.forEach(item => {
+        this.initChildClass(item)
+        this.initChildEvent(item)
+      }, this)
     },
-    initChildEvent() {
-      const self = this
-      this.childElem.forEach(child => {
-        child.cssList = `
-          transition: all 500ms;
+    initChildClass(child) {
+      child.classList.add('dnd-item')
+    },
+    initChildEvent(child) {
+      child.addEventListener('mousedown', e => {
+        const elem = e.target
+        // 获取尺寸
+        const { width, height, top, left } = elem.getBoundingClientRect()
+        const { display, position, margin } = getComputedStyle(elem)
+        // 将shadow 元素 替换到 原位置处
+        shadowElem.style.cssText = `
+          display: ${display};
+          position: ${position};
+          margin: ${margin};
+          width: ${width}px;
+          height: ${height}px;
+          box-sizing: border-box;
+          border: 1px dashed;
+          background: lightred;
         `
-        child.addEventListener('mousedown', e => {
-          const elem = e.target
-          // 获取尺寸
-          const { width, height, top, left } = elem.getBoundingClientRect()
-          const { display, position, margin } = getComputedStyle(elem)
-          // 将shadow 元素 替换到 原位置处
-          shadowElem.style.cssText = `
-            display: ${display};
-            position: ${position};
-            margin: ${margin};
-            width: ${width}px;
-            height: ${height}px;
-            box-sizing: border-box;
-            border: 1px dashed;
-            background: lightred;
-          `
-          console.log(shadowElem)
-          elem.parentElement.replaceChild(shadowElem, elem)
-          // 设置样式
-          elem.style.cssText = `
-            transform: scale(1.2);
-            box-shadow: 0 3px 15px #ddd;
-            position: fixed;
-            left: ${left};
-            top: ${top}
-          `
-          // 设定开始锚点
-        })
+        // 设置样式
+        elem.classList.add('dnd-item-active')
+        elem.style.cssText += `
+          left: ${left}px;
+          top: ${top}px
+        `
+        this.$el.insertBefore(shadowElem, elem)
+        // 设定开始锚点
+      })
+
+      child.addEventListener('mouseup', e => {
+        const elem = e.target
+        // 放回去,替换掉shadow元素
+        this.$el.replaceChild(elem, shadowElem)
+        // 缩放回去大小
+        elem.classList.remove('dnd-item-active')
       })
     },
     hookMounted() {
@@ -78,5 +83,15 @@ export default {
   }
 };
 </script>
-<style lang='stylus' scoped>
+<style scoped>
+  .dnd-item{
+    transition: transform 500ms;
+    transform-origin: center;
+  }
+  .dnd-item-active{
+    background: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 3px 15px #ddd;
+    position: fixed;
+  }
 </style>
