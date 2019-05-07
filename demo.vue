@@ -29,7 +29,9 @@ export default {
 </script>
 <style scoped>
   .item{
-    width: 200px;
+    width: 50px;
+    width: 50px;
+    display: inline-block;
     border: 1px solid;
     padding: 10px;
     margin: 10px;
